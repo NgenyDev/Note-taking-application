@@ -1,0 +1,162 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Body Styling */
+  body {
+    background-color: #4ae2dd; /* Light background */
+    color: #202124; /* Dark text */
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  /* Header */
+  .header {
+    width: 100%;
+    background-color: #ffffff; /* White background for header */
+    padding: 10px 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+  }
+  
+  /* Header Title */
+  .header-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1a73e8; /* Google Blue */
+  }
+  
+  /* Navigation */
+  nav {
+    display: flex;
+    align-items: center;
+  }
+  
+  .nav-list {
+    display: flex;
+    list-style: none;
+    gap: 20px;
+  }
+  
+  .nav-link {
+    text-decoration: none;
+    color: #5f6368; /* Google Gray */
+    font-size: 16px;
+    transition: color 0.3s ease;
+  }
+  
+  .nav-link:hover {
+    color: #1a73e8; /* Google Blue */
+  }
+  
+  /* Buttons */
+  .button {
+    background-color: #1a73e8; /* Google Blue */
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .button:hover {
+    background-color: #135aba; /* Darker blue on hover */
+  }
+  
+  /* Inputs */
+  input[type="text"], input[type="email"], input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+  }
+  
+  input:focus {
+    border-color: #1a73e8; /* Google Blue */
+    outline: none;
+  }
+  
+  /* Main Content */
+  main {
+    flex: 1;
+    padding: 80px 20px; /* Add padding to prevent overlap with header */
+    max-width: 1200px;
+    margin: auto;
+  }
+  
+  /* Cards */
+  .card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px 0;
+  }
+  
+  .card-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  /* Footer */
+  .footer {
+    background-color: #f1f1f1;
+    color: #5f6368; /* Google Gray */
+    text-align: center;
+    padding: 10px;
+    width: 100%;
+    box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+    position: relative;
+    bottom: 0;
+  }
+  
+  /* Links */
+  a {
+    text-decoration: none;
+    color: #1a73e8; /* Google Blue */
+    transition: color 0.3s ease;
+  }
+  
+  a:hover {
+    color: #135aba; /* Darker blue on hover */
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .nav-list {
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
+    }
+  
+    .main {
+      padding: 60px 10px;
+    }
+  }
+  

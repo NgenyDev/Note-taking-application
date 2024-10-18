@@ -1,0 +1,119 @@
+/* Header styling */
+.header {
+  width: 100%;
+  background-color: #202020; /* Dark background for header */
+  padding: 5px 15px; /* Smaller padding for a compact header */
+  color: #fdfcfc; /* Light text color for contrast */
+  display: flex;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  font-size: 14px; /* Smaller font size for a cleaner look */
+}
+
+/* Left-side navigation container */
+.nav-container {
+  display: flex;
+  align-items: center;
+  flex: 1; /* Allow it to take up space on the left */
+}
+
+/* Center the title */
+.header-title {
+  margin: 0 auto; /* Center the title */
+  font-size: 18px; /* Smaller title size */
+  color: #FFFF00; /* Yellow title color */
+  text-align: center;
+  position: absolute; /* Use absolute positioning to keep it centered */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Navigation styles */
+.nav-list {
+  list-style: none;
+  display: flex;
+  flex-direction: row; /* Arrange nav links horizontally */
+  gap: 10px; /* Space between links */
+  padding: 0;
+  align-items: center; /* Align links to the center */
+}
+
+/* Link styles */
+.nav-link {
+  text-decoration: none;
+  color: Cyan; /* Light blue color for links */
+  padding: 5px; /* Smaller padding for compact design */
+  display: block;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}
+
+/* Right-side menu styles */
+.right-menu {
+  display: flex;
+  gap: 10px; /* Space between right-side items */
+  align-items: center; /* Center items vertically */
+  flex: 1; /* Allow it to take up space on the right */
+  justify-content: flex-end; /* Push to the right */
+}
+
+/* Mode toggle button styles */
+.mode-toggle {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 5px;
+}
+
+.mode-toggle:hover {
+  text-decoration: underline;
+}
+
+/* Dark Mode Styling */
+.dark-mode .header {
+  background-color: #333;
+}
+
+.dark-mode .nav-link {
+  color: #f4f4f4;
+}
+
+.dark-mode .mode-toggle {
+  color: #f4f4f4;
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+  .header {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+
+  .nav-list {
+      width: 100%;
+      padding: 10px 0;
+      flex-direction: column; /* Stack nav links vertically on smaller screens */
+  }
+
+  .right-menu {
+      flex-direction: row;
+      justify-content: flex-end;
+      width: 100%;
+  }
+
+  .header-title {
+      position: relative; /* Adjust title positioning for smaller screens */
+      left: 0;
+      transform: none;
+      margin-top: 10px;
+  }
+}

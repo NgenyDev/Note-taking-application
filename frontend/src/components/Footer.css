@@ -1,0 +1,121 @@
+.footer {
+  background-color: lightseagreen; /* Light gray background */
+  color: #333; /* Darker text */
+  text-align: center;
+  padding: 1rem;
+  width: 100%;
+  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1); /* Subtle top shadow */
+  position: relative; /* Changed from sticky to relative */
+  bottom: 0;
+  flex-shrink: 0;
+}
+
+/* Ensure the footer is always at the bottom of the viewport */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensure the body takes up the full height of the viewport */
+  margin: 0;
+}
+
+main {
+  flex: 1; /* Allows the main content to grow and take up space */
+}
+
+.footer .box-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 10px 0;
+}
+
+.footer .box {
+  flex: 1;
+  padding: 10px;
+  max-width: 250px;
+  margin: 10px;
+}
+
+.footer .share a {
+  margin: 0 0.5rem;
+  color: #4285F4; /* Google Blue */
+  transition: color 0.3s ease;
+}
+
+.footer .share a:hover {
+  color: #34A853; /* Google Green */
+}
+
+.footer .links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #5F6368;
+  margin-bottom: 10px;
+}
+
+.footer .links a {
+  text-decoration: none;
+  color: #5F6368;
+  font-size: 14px;
+  padding: 5px 0;
+  transition: color 0.3s ease;
+}
+
+.footer .links a:hover {
+  color: #4285F4; /* Google Blue */
+}
+
+.footer .email {
+  width: 60%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  margin-right: 0.5rem;
+  font-size: 14px;
+  color: #333;
+  outline: none;
+  transition: border 0.3s ease;
+}
+
+.footer .email:focus {
+  border: 1px solid #4285F4;
+}
+
+.footer .btn {
+  padding: 8px 16px;
+  cursor: pointer;
+  color: #fff;
+  background-color: #4285F4;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.footer .btn:hover {
+  background-color: #34A853;
+}
+
+.credit {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: #5F6368;
+}
+
+/* Responsive footer behavior */
+@media (max-width: 768px) {
+  .footer .box-container {
+      flex-direction: column;
+      align-items: center;
+  }
+
+  .footer .box {
+      max-width: 100%;
+  }
+
+  .footer .email {
+      width: 80%;
+      margin-bottom: 10px;
+  }
+}
