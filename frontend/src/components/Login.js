@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import './Login.css'; // Import the CSS file for styling
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
+import './Login.css';
 
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [error, setError] = useState('');
+    const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -16,48 +19,46 @@ function Login() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, password }), // Send plain password
+                body: JSON.stringify({ email, password }),
+                credentials: 'include', // Include credentials for session management
             });
 
             if (!response.ok) {
-                
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'Login failed');
             }
 
-            setIsLoggedIn(true);
-            setError('');
+            const userData = await response.json();
+            login(userData); // Store user data in context
+            navigate('/blog'); // Redirect to blog after login
+
+            setError(''); // Clear any previous errors
         } catch (err) {
-            setError(err.message);
+            console.error('Login error:', err); // Log the error for debugging
+            setError(err.message); // Set error message to display
         }
     };
 
     return (
         <div className="login-container">
             <form className="login-form" onSubmit={handleLogin}>
-                {!isLoggedIn ? (
-                    <>
-                        <h1>Login</h1>
-                        {error && <p className="error-message">{error}</p>}
-                        <label>Email</label>
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                        <label>Password</label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                        <button type="submit">Login</button>
-                    </>
-                ) : (
-                    <p>Login successful! Welcome back.</p>
-                )}
+                <h1>Login</h1>
+                {error && <p className="error-message">{error}</p>} {/* Display error message */}
+                <label>Email</label>
+                <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                />
+                <label>Password</label>
+                <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                />
+                <button type="submit">Login</button>
             </form>
         </div>
     );

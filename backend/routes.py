@@ -7,8 +7,9 @@ from schemas import UserSchema, NoteSchema, ContactMessageSchema
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-CORS(app)
-#CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+# CORS(app)
+#CORS(app, supports_credentials=True)
+#CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
@@ -18,10 +19,10 @@ import logging
 from flask_cors import cross_origin
 mail = Mail(app)
 
-# Set up logging
+
 logging.basicConfig(level=logging.INFO)
 
-# Create a Blueprint
+
 api_bp = Blueprint('api', __name__)
 api = Api(api_bp)
 
@@ -36,7 +37,11 @@ def respond_with_error(message, status_code):
 
 def get_current_user():
     user_id = session.get('user_id')
-    return User.query.get(user_id) if user_id else None
+    if user_id:
+        logging.info(f'Current user ID: {user_id}')
+        return User.query.get(user_id)
+    logging.info('No user ID found in session.')
+    return None
 
 class Signup(Resource):
     @cross_origin()
@@ -45,13 +50,13 @@ class Signup(Resource):
         if not data or 'email' not in data or 'password' not in data:
             return respond_with_error('Email and password required', 400)
 
-        # Check if user already exists
+        
         if User.query.filter_by(email=data['email']).first():
             return respond_with_error('User already exists', 400)
 
-        # Create new user with hashed password
+        
         new_user = User(email=data['email'])
-        new_user.password = generate_password_hash(data['password'])  # Hash the password
+        new_user.password = data['password']  
         db.session.add(new_user)
         db.session.commit()
         
@@ -62,32 +67,29 @@ class Signup(Resource):
         users = User.query.all()
         return user_schema.dump(users, many=True), 200
 
-
 class Login(Resource):
-    @cross_origin()
+    @cross_origin(supports_credentials=True)
     def post(self):
-        data = request.get_json()
         
-        # Check if the required data is provided
+        data = request.get_json()
+
+        
         if not data or 'email' not in data or 'password' not in data:
             return respond_with_error('Email and password required', 400)
 
-        # Fetch the user by email
+       
         user = User.query.filter_by(email=data['email']).first()
+
+       
+        if not user or not user.check_password(data['password']):
+            return respond_with_error('Invalid email or password', 401)
+
         
-        # Check if user exists
-        if not user:
-            return respond_with_error('User not found', 404)
+        session['user_id'] = user.id
 
-        # Use the custom check_password method to verify the password
-        if User.check_password(user,data['password']):
-            session['user_id'] = user.id
-            return {
-                "message": "Login successful",
-                "user": {"id": user.id, "email": user.email}
-            }, 200
+        
+        return user_schema.dump(user), 200
 
-        return respond_with_error('Invalid password', 401)
 class ForgotPassword(Resource):
     def post(self):
         data = request.get_json()
@@ -102,10 +104,9 @@ class ForgotPassword(Resource):
             logging.warning('User not found for password reset')
             return {"error": "User not found"}, 404
 
-        # Generate a reset token (placeholder for real implementation)
-        reset_token = "placeholder_for_reset_token"  # You should implement actual token generation
-        reset_link = f'http://localhost:5000/reset-password/{reset_token}'  # Create your reset link
-
+        
+        reset_token = "placeholder_for_reset_token"  
+        reset_link = f'http://localhost:5000/reset-password/{reset_token}'  
         msg = Message('Password Reset Request', sender='your_email@gmail.com', recipients=[data['email']])
         msg.body = f'Please use the following link to reset your password: {reset_link}'
         try:
@@ -125,13 +126,14 @@ class Logout(Resource):
 class CheckSession(Resource):
     @cross_origin()
     def get(self):
-        user = get_current_user()
+        user = get_current_user()  
         if user:
-            return user_schema.dump(user), 200
-        return respond_with_error('Unauthorized', 401)
+            return user_schema.dump(user), 200  
+        return respond_with_error('Unauthorized', 401)  
+
 
 class Notes(Resource):
-    @cross_origin()
+    @cross_origin(supports_credentials=True)
     def get(self):
         user = get_current_user()
         if not user:
@@ -140,7 +142,7 @@ class Notes(Resource):
         notes = Note.query.filter_by(user_id=user.id).all()
         return notes_schema.dump(notes), 200
 
-    @cross_origin()
+    @cross_origin(supports_credentials=True)
     def post(self):
         user = get_current_user()
         if not user:
@@ -161,8 +163,92 @@ class Notes(Resource):
             logging.error(f'Error creating note: {e}')
             return respond_with_error('Failed to create note', 500)
 
+    @cross_origin(supports_credentials=True)
+    def put(self, note_id):
+        user = get_current_user()
+        if not user:
+            return respond_with_error('Unauthorized', 401)
+
+        note = Note.query.get(note_id)
+        if not note:
+            return respond_with_error('Note not found', 404)
+
+        if note.user_id != user.id:
+            return respond_with_error('Not authorized to update this note', 403)
+
+        data = request.get_json()
+        if not data or 'title' not in data or 'content' not in data:
+            return respond_with_error('Title and content required', 400)
+
+        note.title = data['title']
+        note.content = data['content']
+
+        try:
+            db.session.commit()
+            return note_schema.dump(note), 200
+        except Exception as e:
+            db.session.rollback()
+            logging.error(f'Error updating note: {e}')
+            return respond_with_error('Failed to update note', 500)
+
+    @cross_origin(supports_credentials=True)
+    def patch(self, note_id):
+        user = get_current_user()
+        if not user:
+            return respond_with_error('Unauthorized', 401)
+
+        note = Note.query.get(note_id)
+        if not note:
+            return respond_with_error('Note not found', 404)
+
+        if note.user_id != user.id:
+            return respond_with_error('Not authorized to update this note', 403)
+
+        data = request.get_json()
+        if data:
+            if 'title' in data:
+                note.title = data['title']
+            if 'content' in data:
+                note.content = data['content']
+
+        try:
+            db.session.commit()
+            return note_schema.dump(note), 200
+        except Exception as e:
+            db.session.rollback()
+            logging.error(f'Error updating note: {e}')
+            return respond_with_error('Failed to update note', 500)
+
+    @cross_origin(supports_credentials=True)
+    def delete(self, note_id):
+        user = get_current_user()
+        if not user:
+            logging.warning('Unauthorized delete attempt')
+            return respond_with_error('Unauthorized', 401)
+
+        note = Note.query.get(note_id)
+        if not note:
+            logging.warning(f'Note with ID {note_id} not found')
+            return respond_with_error('Note not found', 404)
+
+        if note.user_id != user.id:
+            logging.warning(f'User {user.id} not authorized to delete note {note_id}')
+            return respond_with_error('Not authorized to delete this note', 403)
+
+        db.session.delete(note)
+
+        try:
+            db.session.commit()
+            logging.info(f'Note with ID {note_id} deleted successfully')
+            return {'message': 'Note deleted successfully'}, 204
+        except Exception as e:
+            db.session.rollback()
+            logging.error(f'Error deleting note: {e}')
+            return respond_with_error('Failed to delete note', 500)
+
+
 class NoteResource(Resource):
-    @cross_origin()
+    @cross_origin(supports_credentials=True)
     def get(self, note_id):
         user = get_current_user()
         if not user:
@@ -173,7 +259,7 @@ class NoteResource(Resource):
             return note_schema.dump(note), 200
         return respond_with_error('Note not found or forbidden', 404)
 
-    @cross_origin()
+    @cross_origin(supports_credentials=True)
     def patch(self, note_id):
         user = get_current_user()
         if not user:
@@ -209,7 +295,7 @@ class NoteResource(Resource):
         return respond_with_error('Note not found or forbidden', 404)
 
 class NoteByTitle(Resource):
-    @cross_origin()
+    @cross_origin(supports_credentials=True)
     def get(self, title):
         user = get_current_user()
         if not user:
@@ -265,3 +351,4 @@ api.add_resource(Users, '/users')
 def handle_exception(e):
     logging.error(f'Unhandled exception: {str(e)}')
     return respond_with_error('Internal Server Error', 500)
+
