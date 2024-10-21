@@ -7,9 +7,6 @@ from schemas import UserSchema, NoteSchema, ContactMessageSchema
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-# CORS(app)
-#CORS(app, supports_credentials=True)
-#CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
@@ -195,29 +192,38 @@ class Notes(Resource):
     def patch(self, note_id):
         user = get_current_user()
         if not user:
-            return respond_with_error('Unauthorized', 401)
+           logging.warning('Unauthorized access attempt to PATCH')
+           return respond_with_error('Unauthorized', 401)
 
         note = Note.query.get(note_id)
         if not note:
-            return respond_with_error('Note not found', 404)
+           logging.warning(f'Note with ID {note_id} not found')
+           return respond_with_error('Note not found', 404)
+
 
         if note.user_id != user.id:
-            return respond_with_error('Not authorized to update this note', 403)
+           logging.warning(f'User {user.id} not authorized to update note {note_id}')
+           return respond_with_error('Not authorized to update this note', 403)
 
         data = request.get_json()
+        logging.info(f'PATCH data received: {data}')
+
         if data:
-            if 'title' in data:
-                note.title = data['title']
-            if 'content' in data:
-                note.content = data['content']
+           if 'title' in data:
+            note.title = data['title']
+           if 'content' in data:
+            note.content = data['content']
+
+            note.user_id = user.id  
 
         try:
-            db.session.commit()
-            return note_schema.dump(note), 200
+           db.session.commit()
+           logging.info(f'Note with ID {note_id} updated successfully')
+           return note_schema.dump(note), 200
         except Exception as e:
-            db.session.rollback()
-            logging.error(f'Error updating note: {e}')
-            return respond_with_error('Failed to update note', 500)
+           db.session.rollback()
+           logging.error(f'Error updating note: {e}')
+           return respond_with_error('Failed to update note', 500)
 
     @cross_origin(supports_credentials=True)
     def delete(self, note_id):
@@ -245,7 +251,6 @@ class Notes(Resource):
             db.session.rollback()
             logging.error(f'Error deleting note: {e}')
             return respond_with_error('Failed to delete note', 500)
-
 
 class NoteResource(Resource):
     @cross_origin(supports_credentials=True)
@@ -295,7 +300,7 @@ class NoteResource(Resource):
         return respond_with_error('Note not found or forbidden', 404)
 
 class NoteByTitle(Resource):
-    @cross_origin(supports_credentials=True)
+    @cross_origin()
     def get(self, title):
         user = get_current_user()
         if not user:

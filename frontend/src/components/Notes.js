@@ -24,16 +24,12 @@ const Notes = () => {
         const fetchNotes = async () => {
             if (user) { 
                 try {
-                    const notesResponse = await fetch(`http://localhost:5000/api/notes?user_id=${user.id}`, {
+                    const response = await fetch(`http://localhost:5000/api/notes?user_id=${user.id}`, {
                         credentials: 'include',
                     });
-                    if (notesResponse.ok) {
-                        const data = await notesResponse.json();
-                        console.log('Fetched notes for user:', data); 
-                        setNotes(data);
-                    } else {
-                        console.error('Failed to fetch notes for user.');
-                    }
+                    if (!response.ok) throw new Error('Failed to fetch notes for user');
+                    const data = await response.json();
+                    setNotes(data);
                 } catch (error) {
                     console.error('Error fetching notes:', error);
                 }
@@ -44,10 +40,10 @@ const Notes = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setNewNote({
-            ...newNote,
+        setNewNote((prev) => ({
+            ...prev,
             [name]: value,
-        });
+        }));
     };
 
     const handleSearchChange = (e) => {
@@ -56,30 +52,34 @@ const Notes = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const noteToAdd = {
+            ...newNote,
+            tags: newNote.tags.split(',').map(tag => tag.trim()), 
+        };
+
         try {
-            const noteToAdd = {
-                ...newNote,
-                tags: newNote.tags.split(',').map(tag => tag.trim()), 
-            };
-            if (editMode) {
-                const response = await fetch(`http://localhost:5000/api/notes/${noteIdToEdit}`, {
+            const response = editMode 
+                ? await fetch(`http://localhost:5000/api/notes/${noteIdToEdit}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(noteToAdd),
-                });
-                if (!response.ok) throw new Error('Failed to update note');
-                setNotes(notes.map(note => (note.id === noteIdToEdit ? { ...note, ...noteToAdd } : note)));
-            } else {
-                const response = await fetch('http://localhost:5000/api/notes', {
+                    credentials: 'include'
+                })
+                : await fetch('http://localhost:5000/api/notes', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(noteToAdd),
-                    credentials:'include'
+                    credentials: 'include'
                 });
-                if (!response.ok) throw new Error('Failed to add new note');
-                const newNoteFromResponse = await response.json();
-                setNotes([...notes, newNoteFromResponse]);
-            }
+
+            if (!response.ok) throw new Error(editMode ? 'Failed to update note' : 'Failed to add new note');
+
+            const newNoteFromResponse = await response.json();
+            setNotes(prev => editMode 
+                ? prev.map(note => (note.id === noteIdToEdit ? { ...note, ...noteToAdd } : note))
+                : [...prev, newNoteFromResponse]
+            );
+
             resetNewNote();
             setShowForm(false);
         } catch (error) {
@@ -96,10 +96,12 @@ const Notes = () => {
 
     const handleEdit = (noteId) => {
         const noteToEdit = notes.find((note) => note.id === noteId);
+        if (!noteToEdit) return;
+
         setNewNote({
             title: noteToEdit.title,
             content: noteToEdit.content,
-            tags: noteToEdit.tags ? noteToEdit.tags.join(', ') : '', // Handle null tags
+            tags: noteToEdit.tags ? noteToEdit.tags.join(', ') : '',
             date: noteToEdit.date,
         });
         setEditMode(true);
@@ -108,17 +110,18 @@ const Notes = () => {
     };
 
     const handleDelete = async (noteId) => {
-        try {
-            const response = await fetch(`http://localhost:5000/api/notes/${noteId}`, {
-                method: 'DELETE',
-            });
-            if (!response.ok) throw new Error('Failed to delete note');
-            setNotes(notes.filter((note) => note.id !== noteId));
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Failed to delete the note. Please try again.');
-        }
-    };
+                try {
+                    const response = await fetch(`http://localhost:5000/api/notes/${noteId}`, {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials:'include'
+                    });
+                    if (!response.ok) throw new Error('Failed to delete note');
+                    setNotes(notes.filter((note) => note.id !== noteId));
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            };
 
     const filteredNotes = notes.filter((note) =>
         note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -132,16 +135,16 @@ const Notes = () => {
             {user ? (
                 <>
                     <div className="button-group">
-                        <button onClick={() => setShowSearch(!showSearch)}>
+                        <button onClick={() => setShowSearch(prev => !prev)}>
                             {showSearch ? 'Hide Search' : 'Show Search'}
                         </button>
-                        <button onClick={() => setShowForm(!showForm)}>
+                        <button onClick={() => setShowForm(prev => !prev)}>
                             {showForm ? (editMode ? 'Cancel Edit' : 'Hide Form') : (editMode ? 'Edit Notes' : 'Add New Notes')}
                         </button>
-                        <button onClick={() => setShowNotes(!showNotes)}>
+                        <button onClick={() => setShowNotes(prev => !prev)}>
                             {showNotes ? 'Hide Notes' : 'Show Notes'}
                         </button>
-                        <button onClick={() => setShowEditor(!showEditor)}>
+                        <button onClick={() => setShowEditor(prev => !prev)}>
                             {showEditor ? 'Hide Editor' : 'Show Editor'}
                         </button>
                     </div>

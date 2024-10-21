@@ -20,7 +20,7 @@ function Login() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ email, password }),
-                credentials: 'include', // Include credentials for session management
+                credentials: 'include', 
             });
 
             if (!response.ok) {
@@ -29,13 +29,13 @@ function Login() {
             }
 
             const userData = await response.json();
-            login(userData); // Store user data in context
-            navigate('/blog'); // Redirect to blog after login
+            login(userData); 
+            navigate('/blog'); 
 
-            setError(''); // Clear any previous errors
+            setError(''); 
         } catch (err) {
-            console.error('Login error:', err); // Log the error for debugging
-            setError(err.message); // Set error message to display
+            console.error('Login error:', err); 
+            setError(err.message); 
         }
     };
 

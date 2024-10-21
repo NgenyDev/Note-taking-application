@@ -18,7 +18,7 @@ def create_app():
     app.config['SESSION_TYPE'] = 'filesystem' 
 
     # Initialize CORS with specific origin
-    CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+    CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": "*"}})
 
     # Initialize extensions
     db.init_app(app)

@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css'; // Import Swiper styles
-import { Autoplay, Pagination, Navigation } from 'swiper/modules'; // Import Swiper modules
+import 'swiper/css'; 
+import { Autoplay, Pagination, Navigation } from 'swiper/modules'; 
 import { styled } from '@mui/material/styles';
 
-// Define a styled component using MUI v5
+
 const StyledSwiperContainer = styled('div')(({ theme }) => ({
   backgroundColor: '#f5f5f5',
-  height: '300px', // Adjust height as needed
+  height: '300px', 
   width: '100%',
-  overflow: 'hidden', // Prevent overflow of images
+  overflow: 'hidden', 
 }));
 
 const StyledImage = styled('img')({

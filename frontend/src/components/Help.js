@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import './Help.css'; // Import the CSS file for styling
+import './Help.css'; 
 
 function Help() {
     const [isDarkMode, setIsDarkMode] = useState(false);
 
     useEffect(() => {
-        // Load the theme from localStorage
+        
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme) {
             setIsDarkMode(savedTheme === 'dark');
@@ -13,7 +13,7 @@ function Help() {
     }, []);
 
     useEffect(() => {
-        // Save the theme to localStorage
+        
         localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
     }, [isDarkMode]);
 
