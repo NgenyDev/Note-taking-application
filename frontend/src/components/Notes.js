@@ -111,7 +111,7 @@ const Notes = () => {
 
     const handleDelete = async (noteId) => {
                 try {
-                    const response = await fetch(`http://localhost:5000/api/notes/${noteId}`, {
+                    const response = await fetch(`https://note-taking-application-bthk.onrender.com/api/notes${noteId}`, {
                         method: 'DELETE',
                         headers: { 'Content-Type': 'application/json' },
                         credentials:'include'
