@@ -8,6 +8,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
+CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": "https://note-taking-application-1.onrender.com/blog"}})  # Replace with your frontend URL
+
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
