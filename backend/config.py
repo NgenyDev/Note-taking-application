@@ -15,7 +15,7 @@ class Config:
     # Construct the database URI
     SQLALCHEMY_DATABASE_URI = (
         f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
-    ) or 'postgresql://members:4444@localhost/group5'
+    ) or 'postgresql://notetakingappdb_4xbj_user:AJ83KIlWBeg7GhqGIp6mNVS9ebM1wdY1@dpg-csd0rirv2p9s73fppatg-a.oregon-postgres.render.com/notetakingappdb_4xbj'
     
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.getenv('SECRET_KEY') or 'b938eed8627bfeb4563583f22d78e727'

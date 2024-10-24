@@ -41,12 +41,16 @@ def setup_database(app):
     with app.app_context():
         db.create_all()  
 
-def run_app(app):
-    """Run the Flask application."""
-    app.run(host='0.0.0.0', port=5000, debug=True)  
+# def run_app(app):
+#     """Run the Flask application."""
+#     app.run(host='0.0.0.0', port=5000, debug=True)  
 
+
+# if __name__ == '__main__':
+#     logging.basicConfig(level=logging.INFO)  
+#     app = create_app()
+#     setup_database(app)  
+#     run_app(app)
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)  
-    app = create_app()
-    setup_database(app)  
-    run_app(app)
+    port = int(os.environ.get("PORT", 5555))
+    app.run(host="0.0.0.0", port=port, debug=True)
