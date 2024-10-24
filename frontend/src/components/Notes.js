@@ -24,7 +24,7 @@ const Notes = () => {
         const fetchNotes = async () => {
             if (user) { 
                 try {
-                    const response = await fetch(`http://localhost:5000/api/notes?user_id=${user.id}`, {
+                    const response = await fetch(`https://note-taking-application-bthk.onrender.com/api/notes?user_id=${user.id}`, { // Updated URL
                         credentials: 'include',
                     });
                     if (!response.ok) throw new Error('Failed to fetch notes for user');
@@ -59,13 +59,13 @@ const Notes = () => {
 
         try {
             const response = editMode 
-                ? await fetch(`http://localhost:5000/api/notes/${noteIdToEdit}`, {
+                ? await fetch(`https://note-taking-application-bthk.onrender.com/api/notes/${noteIdToEdit}`, { // Updated URL
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(noteToAdd),
                     credentials: 'include'
                 })
-                : await fetch('http://localhost:5000/api/notes', {
+                : await fetch('https://note-taking-application-bthk.onrender.com/api/notes', { // Updated URL
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(noteToAdd),
@@ -110,18 +110,18 @@ const Notes = () => {
     };
 
     const handleDelete = async (noteId) => {
-                try {
-                    const response = await fetch(`http://localhost:5000/api/notes/${noteId}`, {
-                        method: 'DELETE',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials:'include'
-                    });
-                    if (!response.ok) throw new Error('Failed to delete note');
-                    setNotes(notes.filter((note) => note.id !== noteId));
-                } catch (error) {
-                    console.error('Error:', error);
-                }
-            };
+        try {
+            const response = await fetch(`https://note-taking-application-bthk.onrender.com/api/notes/${noteId}`, { // Updated URL
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            });
+            if (!response.ok) throw new Error('Failed to delete note');
+            setNotes(notes.filter((note) => note.id !== noteId));
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
     const filteredNotes = notes.filter((note) =>
         note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||

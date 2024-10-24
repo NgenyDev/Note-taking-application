@@ -14,7 +14,7 @@ function Login() {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:5000/api/login', {
+            const response = await fetch('https://note-taking-application-bthk.onrender.com/api/login', {  // Updated URL
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ function Login() {
         <div className="login-container">
             <form className="login-form" onSubmit={handleLogin}>
                 <h1>Login</h1>
-                {error && <p className="error-message">{error}</p>} {/* Display error message */}
+                {error && <p className="error-message">{error}</p>} 
                 <label>Email</label>
                 <input
                     type="email"

@@ -7,6 +7,7 @@ from schemas import UserSchema, NoteSchema, ContactMessageSchema
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587

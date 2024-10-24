@@ -12,7 +12,7 @@ function Signup() {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:5000/api/signup', {
+            const response = await fetch('https://note-taking-application-bthk.onrender.com/api/signup', {  // Updated URL
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -25,7 +25,6 @@ function Signup() {
                 throw new Error(errorData.error || 'Signup failed');
             }
 
-            
             alert('Signup successful! Please log in.'); 
             navigate('/login'); 
             setError('');
